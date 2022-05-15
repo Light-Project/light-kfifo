@@ -180,6 +180,10 @@ unsigned long kfifo_in_record(struct kfifo *kfifo, const void *buff,
 
 int kfifo_dynamic_alloc(struct kfifo *kfifo, size_t esize, size_t size)
 {
+    size = roundup_pow2(size);
+    if (size < 2)
+        return -EINVAL;
+
     kfifo->in = 0;
     kfifo->out = 0;
     kfifo->mask = size - 1;
