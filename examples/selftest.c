@@ -155,7 +155,7 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
 
     for (count = 0; count < TEST_LOOP; ++count) {
         ret = kfifo_put(&kdata->dynamic_bytetest, bytetest_table[count]);
-        printf("kfifo dynamic_bytetest %u put '%c': ", count, *bytevalue);
+        printf("kfifo dynamic_bytetest %u put '%c': ", count, bytetest_table[count]);
         if (!ret || kfifo_len(&kdata->dynamic_bytetest) != count + 1) {
             printf("failed\n");
             return -EFAULT;
