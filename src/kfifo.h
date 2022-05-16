@@ -285,6 +285,33 @@ struct kfifo {
 })
 
 /**
+ * kfifo_peek - get an object from kfifo.
+ * @fifo: the kfifo to get object out.
+ * @value: object to get.
+ */
+#define kfifo_peek(fifo, value) ({                  \
+    typeof((fifo) + 1) tmp = (fifo);                \
+    typeof(tmp->ptr) tvalue = (value);              \
+    struct kfifo *kfifo = &tmp->kfifo;              \
+    unsigned long recsize = sizeof(*tmp->rectype);  \
+    unsigned long retval;                           \
+    if (recsize)                                    \
+        retval = kfifo_peek_record(kfifo,           \
+                tvalue, sizeof(*tvalue), recsize);  \
+    else {                                          \
+        retval = !kfifo_check_empty(tmp);           \
+        if (retval) {                               \
+            *(typeof(tmp->data)) tvalue =           \
+            (kfifo_check_dynamic(tmp) ?             \
+            ((typeof(tmp->data)) kfifo->data) :     \
+            (tmp->buff))                            \
+            [kfifo->out & tmp->kfifo.mask];         \
+        }                                           \
+    }                                               \
+    retval;                                         \
+})
+
+/**
  * kfifo_get - get an object from kfifo.
  * @fifo: the kfifo to get object out.
  * @value: object to get.
@@ -340,21 +367,39 @@ struct kfifo {
     retval;                                         \
 })
 
+
+/**
+ * kfifo_out_peek - peek continuous data from kfifo.
+ * @fifo: the kfifo to peek data out.
+ * @buff: the buffer to peek data in.
+ * @len: number of continuously peeked objects.
+ */
+#define kfifo_out_peek(fifo, buff, len) ({              \
+    typeof((fifo) + 1) tmp = (fifo);                    \
+    typeof(tmp->ptr) tbuff = (buff);                    \
+    struct kfifo *kfifo = &tmp->kfifo;                  \
+    unsigned long tlen = (len);                         \
+    unsigned long recsize = sizeof(*tmp->rectype);      \
+    (recsize) ?                                         \
+    kfifo_peek_record(kfifo, tbuff, tlen, recsize) :    \
+    kfifo_peek_flat(kfifo, tbuff, tlen);                \
+})
+
 /**
  * kfifo_out - copy continuous data from kfifo.
  * @fifo: the kfifo to copy data out.
  * @buff: the buffer to copy data in.
  * @len: number of continuously copied objects.
  */
-#define kfifo_out(fifo, buff, len) ({               \
-    typeof((fifo) + 1) tmp = (fifo);                \
-    typeof(tmp->ptr) tbuff = (buff);                \
-    struct kfifo *kfifo = &tmp->kfifo;              \
-    unsigned long tlen = (len);                     \
-    unsigned long recsize = sizeof(*tmp->rectype);  \
-    (recsize) ?                                     \
-    kfifo_out_record(kfifo, tbuff, tlen, recsize) : \
-    kfifo_out_flat(kfifo, tbuff, tlen);             \
+#define kfifo_out(fifo, buff, len) ({                   \
+    typeof((fifo) + 1) tmp = (fifo);                    \
+    typeof(tmp->ptr) tbuff = (buff);                    \
+    struct kfifo *kfifo = &tmp->kfifo;                  \
+    unsigned long tlen = (len);                         \
+    unsigned long recsize = sizeof(*tmp->rectype);      \
+    (recsize) ?                                         \
+    kfifo_out_record(kfifo, tbuff, tlen, recsize) :     \
+    kfifo_out_flat(kfifo, tbuff, tlen);                 \
 })
 
 /**
@@ -363,15 +408,15 @@ struct kfifo {
  * @buff: the buffer to copy data out.
  * @len: number of continuously copied objects.
  */
-#define kfifo_in(fifo, buff, len) ({                \
-    typeof((fifo) + 1) tmp = (fifo);                \
-    typeof(tmp->cptr) tbuff = (buff);               \
-    struct kfifo *kfifo = &tmp->kfifo;              \
-    unsigned long tlen = (len);                     \
-    unsigned long recsize = sizeof(*tmp->rectype);  \
-    (recsize) ?                                     \
-    kfifo_in_record(kfifo, tbuff, tlen, recsize) :  \
-    kfifo_in_flat(kfifo, tbuff, tlen);              \
+#define kfifo_in(fifo, buff, len) ({                    \
+    typeof((fifo) + 1) tmp = (fifo);                    \
+    typeof(tmp->cptr) tbuff = (buff);                   \
+    struct kfifo *kfifo = &tmp->kfifo;                  \
+    unsigned long tlen = (len);                         \
+    unsigned long recsize = sizeof(*tmp->rectype);      \
+    (recsize) ?                                         \
+    kfifo_in_record(kfifo, tbuff, tlen, recsize) :      \
+    kfifo_in_flat(kfifo, tbuff, tlen);                  \
 })
 
 extern unsigned long kfifo_peek_flat(struct kfifo *kfifo, void *buff, unsigned long len);

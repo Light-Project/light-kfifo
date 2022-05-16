@@ -71,6 +71,14 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     printf("pass\n");
 
     for (count = 0; count < TEST_LOOP; ++count) {
+        ret = kfifo_peek(&kdata->normal_bytetest, bytevalue);
+        printf("kfifo normal_bytetest %u peek '%c': ", count, *bytevalue);
+        if (!ret || *bytevalue != bytetest_table[count]) {
+            printf("failed\n");
+            return -EFAULT;
+        }
+        printf("pass\n");
+
         ret = kfifo_get(&kdata->normal_bytetest, bytevalue);
         printf("kfifo normal_bytetest %u get '%c': ", count, *bytevalue);
         if (!ret || *bytevalue != bytetest_table[count]) {
@@ -88,6 +96,21 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
+    printf("kfifo normal_bytetest copy peek out: ");
+    ret = kfifo_out_peek(&kdata->normal_bytetest, bytevalue, TEST_LOOP);
+    if (ret != TEST_LOOP) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
+    printf("kfifo normal_bytetest check peek out: ");
+    if (memcmp(bytevalue, bytetest_table, sizeof(bytetest_table))) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
     printf("kfifo normal_bytetest copy out: ");
     ret = kfifo_out(&kdata->normal_bytetest, bytevalue, TEST_LOOP);
     if (ret != TEST_LOOP) {
@@ -96,7 +119,7 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
-    printf("kfifo normal_bytetest check copy: ");
+    printf("kfifo normal_bytetest check out: ");
     if (memcmp(bytevalue, bytetest_table, sizeof(bytetest_table))) {
         printf("failed\n");
         return -EFAULT;
@@ -121,9 +144,17 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     printf("pass\n");
 
     for (count = 0; count < TEST_LOOP; ++count) {
-        kfifo_get(&kdata->normal_longtest, longvalue);
+        ret = kfifo_peek(&kdata->normal_longtest, longvalue);
+        printf("kfifo normal_longtest %u peek %#lx: ", count, *longvalue);
+        if (!ret || *longvalue != longtest_table[count]) {
+            printf("failed\n");
+            return -EFAULT;
+        }
+        printf("pass\n");
+
+        ret = kfifo_get(&kdata->normal_longtest, longvalue);
         printf("kfifo normal_longtest %u get %#lx: ", count, *longvalue);
-        if (*longvalue != longtest_table[count]) {
+        if (!ret || *longvalue != longtest_table[count]) {
             printf("failed\n");
             return -EFAULT;
         }
@@ -138,6 +169,21 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
+    printf("kfifo normal_longtest copy peek out: ");
+    ret = kfifo_out_peek(&kdata->normal_longtest, longvalue, TEST_LOOP);
+    if (ret != TEST_LOOP) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
+    printf("kfifo normal_longtest check peek out: ");
+    if (memcmp(longvalue, longtest_table, sizeof(longtest_table))) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
     printf("kfifo normal_longtest copy out: ");
     ret = kfifo_out(&kdata->normal_longtest, longvalue, TEST_LOOP);
     if (ret != TEST_LOOP) {
@@ -146,7 +192,7 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
-    printf("kfifo normal_longtest check copy: ");
+    printf("kfifo normal_longtest check out: ");
     if (memcmp(longvalue, longtest_table, sizeof(longtest_table))) {
         printf("failed\n");
         return -EFAULT;
@@ -171,6 +217,14 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     printf("pass\n");
 
     for (count = 0; count < TEST_LOOP; ++count) {
+        ret = kfifo_peek(&kdata->dynamic_bytetest, bytevalue);
+        printf("kfifo dynamic_bytetest %u peek '%c': ", count, *bytevalue);
+        if (!ret || *bytevalue != bytetest_table[count]) {
+            printf("failed\n");
+            return -EFAULT;
+        }
+        printf("pass\n");
+
         ret = kfifo_get(&kdata->dynamic_bytetest, bytevalue);
         printf("kfifo dynamic_bytetest %u get '%c': ", count, *bytevalue);
         if (!ret || *bytevalue != bytetest_table[count]) {
@@ -188,13 +242,28 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
+    printf("kfifo dynamic_bytetest copy peek out: ");
+    ret = kfifo_out_peek(&kdata->dynamic_bytetest, bytevalue, TEST_LOOP);
+    if (ret != TEST_LOOP) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
+    printf("kfifo dynamic_bytetest check peek out: ");
+    if (memcmp(bytetest_table, bytetest_table, sizeof(bytetest_table))) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
     printf("kfifo dynamic_bytetest copy out: ");
     ret = kfifo_out(&kdata->dynamic_bytetest, bytevalue, TEST_LOOP);
     if (ret != TEST_LOOP)
         return -EFAULT;
     printf("pass\n");
 
-    printf("kfifo dynamic_bytetest check copy: ");
+    printf("kfifo dynamic_bytetest check out: ");
     if (memcmp(bytevalue, bytetest_table, sizeof(bytetest_table))) {
         printf("failed\n");
         return -EFAULT;
@@ -219,9 +288,17 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     printf("pass\n");
 
     for (count = 0; count < TEST_LOOP; ++count) {
-        kfifo_get(&kdata->dynamic_longtest, longvalue);
+        ret = kfifo_peek(&kdata->dynamic_longtest, longvalue);
+        printf("kfifo dynamic_longtest %u peek %#lx: ", count, *longvalue);
+        if (!ret || *longvalue != longtest_table[count]) {
+            printf("failed\n");
+            return -EFAULT;
+        }
+        printf("pass\n");
+
+        ret = kfifo_get(&kdata->dynamic_longtest, longvalue);
         printf("kfifo dynamic_longtest %u get %#lx: ", count, *longvalue);
-        if (*longvalue != longtest_table[count]) {
+        if (!ret || *longvalue != longtest_table[count]) {
             printf("failed\n");
             return -EFAULT;
         }
@@ -236,6 +313,21 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
+    printf("kfifo dynamic_longtest copy peek out: ");
+    ret = kfifo_out_peek(&kdata->dynamic_longtest, longvalue, TEST_LOOP);
+    if (ret != TEST_LOOP) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
+    printf("kfifo dynamic_longtest check peek out: ");
+    if (memcmp(longvalue, longtest_table, sizeof(longtest_table))) {
+        printf("failed\n");
+        return -EFAULT;
+    }
+    printf("pass\n");
+
     printf("kfifo dynamic_longtest copy out: ");
     ret = kfifo_out(&kdata->dynamic_longtest, longvalue, TEST_LOOP);
     if (ret != TEST_LOOP) {
@@ -244,7 +336,7 @@ static int kfifo_testing(struct kfifo_test_pdata *kdata)
     }
     printf("pass\n");
 
-    printf("kfifo normal_longtest check copy: ");
+    printf("kfifo normal_longtest check out: ");
     if (memcmp(longvalue, longtest_table, sizeof(longtest_table))) {
         printf("failed\n");
         return -EFAULT;
