@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-flags = -g -O0 -Wall -Werror -I src/
+flags = -g -O0 -Wall -Werror -I src/ -lpthread
 head  = src/kfifo.h src/macro.h
 obj   = src/kfifo.o
-demo  = examples/selftest
+demo  = examples/selftest examples/simple
 
 all: $(demo)
 
