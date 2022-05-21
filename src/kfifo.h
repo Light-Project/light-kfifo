@@ -360,13 +360,12 @@ struct kfifo {
             ((typeof(tmp->data)) kfifo->data) :     \
             (tmp->buff))                            \
             [kfifo->in & tmp->kfifo.mask] =         \
-            *(typeof(tmp->data)) & tvalue;          \
+            *(typeof(tmp->data)) &tvalue;           \
             ++kfifo->in;                            \
         }                                           \
     }                                               \
     retval;                                         \
 })
-
 
 /**
  * kfifo_out_peek - peek continuous data from kfifo.
