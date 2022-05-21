@@ -9,14 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * ARRAY_SIZE - get the number of elements in array.
- * @arr: array to be sized.
- */
-#define ARRAY_SIZE(arr) ( \
-    sizeof(arr) / sizeof((arr)[0]) \
-)
-
 #define TEST_LOOP 16
 
 struct kfifo_test_pdata {

@@ -48,6 +48,14 @@
     (val) = max(val, hi); \
 })
 
+/**
+ * ARRAY_SIZE - get the number of elements in array.
+ * @arr: array to be sized.
+ */
+#define ARRAY_SIZE(arr) ( \
+    sizeof(arr) / sizeof((arr)[0]) \
+)
+
 static inline unsigned long roundup_pow2(unsigned long val)
 {
     return 1UL << (63 - __builtin_clzll(val - 1) + 1);
