@@ -192,7 +192,7 @@ int kfifo_dynamic_alloc(struct kfifo *kfifo, size_t esize, size_t size)
     kfifo->data = calloc(size, esize);
     if (!kfifo->data) {
         kfifo->mask = 0;
-        return -EINVAL;
+        return -ENOMEM;
     }
 
     return 0;
